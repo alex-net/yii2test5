@@ -9,6 +9,7 @@ use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
+use app\models\RegistrForm;
 
 class SiteController extends Controller
 {
@@ -96,6 +97,32 @@ class SiteController extends Controller
         Yii::$app->user->logout();
 
         return $this->goHome();
+    }
+
+    /**
+     * регистрация 
+     */
+    public function actionRegister()
+    {
+        $m=new RegistrForm();
+        if (Yii::$app->request->isAjax && $m->load(Yii::$app->request->post())) {
+            Yii::$app->response->format=\yii\web\Response::FORMAT_JSON;
+            return \yii\widgets\ActiveForm::validate($m);
+        }
+
+        if (Yii::$app->request->isPost && $m->registrUser(Yii::$app->request->post()))
+            return $this->redirect(['finish-reg']);
+
+        return $this->render('register',['m'=>$m]);
+    }
+
+
+    /**
+     * регистрация финиш
+     */
+    public function actionFinishReg()
+    {
+        return $this->render('reg-finish');
     }
 
     /**
